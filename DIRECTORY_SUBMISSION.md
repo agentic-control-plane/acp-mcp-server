@@ -7,7 +7,7 @@ Materials for submitting `acp-mcp-server` to the Anthropic and OpenAI directorie
 | Field | Value |
 |---|---|
 | Server name | Agentic Control Plane |
-| MCP endpoint | `https://mcp.agenticcontrolplane.com/mcp` |
+| MCP endpoint | `https://api.agenticcontrolplane.com/mcp` |
 | Transport | Streamable HTTP |
 | Auth | OAuth 2.1 / DCR / PKCE (Firebase Google sign-in) |
 | Website | https://agenticcontrolplane.com |
@@ -19,11 +19,11 @@ Materials for submitting `acp-mcp-server` to the Anthropic and OpenAI directorie
 
 ## One-line pitch
 
-Pre-tool-use governance for AI agents. Call `acp_check` before any sensitive action to get an allow/deny decision backed by per-workspace policies, PII transforms, per-tier rate limits, and structured audit logging.
+See, price, and control every tool call your AI agents make. `acp_check` returns an allow/deny decision before any sensitive action — backed by per-workspace policies, PII transforms, per-tier rate limits, and a full audit trail — plus 8 introspection tools for cost, traces, and usage.
 
 ## Short description (Claude / ChatGPT directory blurb)
 
-Agentic Control Plane (ACP) is a governance layer for AI tool calls. Agents call `acp_check` before executing any sensitive tool — reading data, writing data, running shell commands — and ACP returns an `allow`, `deny`, or `ask` decision based on policies the user has configured in their workspace. Every call is logged with per-user identity, tool name, input preview, PII findings, and decision rationale, giving teams a real audit trail and a policy kill-switch for agent actions.
+Agentic Control Plane (ACP) lets you understand and control your agents down to each action they take. Agents call `acp_check` before executing any sensitive tool — reading data, writing data, running shell commands — and ACP returns an `allow`, `deny`, or `ask` decision based on policies the user has configured in their workspace. Every call is logged with per-user identity, tool name, input preview, PII findings, and decision rationale, giving teams a real audit trail and a policy kill-switch for agent actions. Eight further tools let the agent introspect its own footprint — audit history, spend, run traces, cost composition, plan usage — and draft policy rules that a human confirms in the console.
 
 Use cases:
 - CISOs who need visibility and control over Claude / ChatGPT agent activity inside their org.
@@ -44,13 +44,26 @@ Output: `{ decision: "allow"|"deny"|"ask", reason: string, tool: string }`
 
 Annotations: `readOnlyHint: true`, `destructiveHint: false`, `idempotentHint: true`, `openWorldHint: true`.
 
-**`acp_status`** — Check governance connectivity and mode.
+**`acp_status`** — Check connectivity, mode, and the caller's budget state (spent / remaining / percent of cap).
 
 Input: none
 
 Output: `"ACP: Connected. Mode: audit-only. Dashboard: https://cloud.agenticcontrolplane.com"`
 
 Annotations: `readOnlyHint: true`, `destructiveHint: false`, `idempotentHint: true`, `openWorldHint: true`.
+
+**Introspection tools** (all read-only, same annotations as `acp_status`):
+
+- **`acp_audit`** — the caller's recent governed tool calls: what ran, allow/deny/redact decision, and why. Optional `decision` filter and `limit`.
+- **`acp_cost`** — model spend over `today | 7d | 30d`: total dollars, run count, by-model breakdown.
+- **`acp_optimize`** — cost composition for self-optimization: prompt-cache hit rate, spend by model, loop overhead, context fill (system vs history vs tool results), which tools produce the most re-read output.
+- **`acp_trace`** — step-by-step trace of one run (ordered steps with tool, leaf/loop classification, cost, model, totals). Defaults to the latest run; accepts `sessionId`.
+- **`acp_usage`** — workspace monthly governed-call plan usage: calls used/remaining, state (ok / grace / lapsed), the caller's own contribution.
+- **`acp_recommendations`** — ranked, evidence-backed policy recommendations from the workspace's history (repeatedly-approved actions, high-risk actions running unreviewed, command-laundering caught). Read-only; applying is done by a human in the console.
+
+**`acp_propose_rule`** — draft a policy rule (`tool`, `permission`, optional `guidance`/`rationale`/`tier`) for a human to review and apply in the console. This tool NEVER changes policy itself — nothing is enforced until a human confirms in the dashboard.
+
+Annotations: `readOnlyHint: true` (writes only a draft for human review), `destructiveHint: false`, `idempotentHint: true`, `openWorldHint: true`.
 
 ---
 
@@ -94,7 +107,7 @@ Agent flow:
 User just signed into their ACP workspace via OAuth.
 
 Agent flow:
-1. They ask the agent "Is governance working?"
+1. They ask the agent "Is ACP connected and controlling my tool calls?"
 2. Agent calls `acp_status`.
 3. ACP returns `"ACP: Connected. Mode: audit-only. Dashboard: https://cloud.agenticcontrolplane.com"`.
 4. User clicks through to their dashboard and sees the call they just made in the audit log, tagged with their workspace and the calling client (Claude / ChatGPT / etc.).

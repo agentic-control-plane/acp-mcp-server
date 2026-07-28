@@ -1,6 +1,6 @@
 {
   "name": "@gatewaystack/acp-mcp-server",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "ACP governance MCP server — log and govern every tool call from Claude, ChatGPT, Lovable, and any MCP client",
   "license": "MIT",
   "author": "David Crowe <david@reducibl.com>",
