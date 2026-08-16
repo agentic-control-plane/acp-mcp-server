@@ -42,7 +42,7 @@ export function mcpToolDescriptors() {
           },
           agent_tier: {
             type: "string",
-            description: "Agent autonomy tier: 'interactive' (human supervising), 'subagent', 'background' (autonomous), or 'api'. Defaults to 'interactive'.",
+            description: "Agent autonomy tier: 'interactive' (human supervising), 'subagent', 'background' (autonomous), or 'api'. When omitted, the gateway resolves the least-trusted applicable tier for the credential — report 'interactive' only when a human is actually watching this call.",
           },
         },
         required: ["tool_name", "tool_input"],
@@ -101,7 +101,12 @@ async function acpCheck(
       body: JSON.stringify({
         tool_name: toolName,
         tool_input: toolInput,
-        agent_tier: String(args.agent_tier || "interactive"),
+        // gatewaystack-connect#692: never invent "interactive" for callers
+        // that didn't say so — omission lets the gateway resolve the
+        // least-trusted applicable tier instead of the loosest one.
+        ...(typeof args.agent_tier === "string" && args.agent_tier
+          ? { agent_tier: String(args.agent_tier) }
+          : {}),
         client: { name: clientName, version: "0.1.0" },
       }),
       signal: controller.signal,
