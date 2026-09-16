@@ -24,8 +24,10 @@ export function mcpToolDescriptors() {
     {
       name: "acp_check",
       description:
-        "Check whether a tool call is allowed by ACP governance policies. " +
-        "Call this before executing any sensitive action. Returns allow/deny decision.",
+        "Answers 'would this call be allowed?' for a specific tool call — use for explicit policy " +
+        "questions or pre-flight planning. If this harness has ACP hooks installed (PreToolUse/PostToolUse), " +
+        "every tool call is already governed automatically — do not call this per tool in that case. " +
+        "Returns allow/deny decision.",
       inputSchema: {
         type: "object" as const,
         properties: {

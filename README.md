@@ -10,7 +10,7 @@ Two tools, callable via MCP:
 
 | Tool | What it does |
 |---|---|
-| `acp_check` | Ask ACP whether a tool call should be allowed. Returns `allow` / `deny` / `ask` plus a reason. |
+| `acp_check` | Answer "would this call be allowed?" for a specific call — for explicit questions or pre-flight planning. If ACP hooks are installed in the harness, tool calls are already governed automatically and this doesn't need to be called per tool. Returns `allow` / `deny` / `ask` plus a reason. |
 | `acp_status` | Verify the connection and your workspace identity. |
 
 That's the whole surface. Everything else — policies, audit logs, scope intersection, delegation chains — runs server-side at `api.agenticcontrolplane.com`. This MCP server is just the bridge.
