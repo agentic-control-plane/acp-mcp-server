@@ -22,7 +22,22 @@
     "acp"
   ],
   "type": "module",
-  "main": "dist/server/expressServer.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./server": {
+      "types": "./dist/server/expressServer.d.ts",
+      "default": "./dist/server/expressServer.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "acp-mcp-server": "dist/bin/acp-mcp-server.js"
+  },
   "files": [
     "dist",
     "src",
@@ -30,9 +45,15 @@
     "LICENSE"
   ],
   "scripts": {
+    "clean": "rm -rf dist",
     "build": "tsc",
+    "prepack": "npm run clean && npm run build",
+    "test": "npm run build && node --test test/",
     "start": "node dist/server/expressServer.js",
     "dev": "npx tsx src/server/expressServer.ts"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "dependencies": {
     "@gatewaystack/identifiabl": "^0.0.6",
