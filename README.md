@@ -42,7 +42,7 @@ You'll need an ACP workspace. The free tier is unlimited tool-call logging — s
 If you want to run the bridge yourself — for air-gapped deployments, or to point at a self-hosted ACP gateway — clone and run:
 
 ```bash
-git clone https://github.com/davidcrowe/acp-mcp-server
+git clone https://github.com/agentic-control-plane/acp-mcp-server
 cd acp-mcp-server
 npm install
 npm run build
@@ -103,4 +103,5 @@ MIT — see [LICENSE](LICENSE).
 - [ACP — full product](https://agenticcontrolplane.com)
 - [Sign up (free tier)](https://cloud.agenticcontrolplane.com/login)
 - [Governance benchmark](https://github.com/agentic-control-plane/agentgovbench)
-- [Issues / questions](https://github.com/davidcrowe/acp-mcp-server/issues)
+- [Issues / questions](https://github.com/agentic-control-plane/acp-mcp-server/issues)
+- Email: support@agenticcontrolplane.com
