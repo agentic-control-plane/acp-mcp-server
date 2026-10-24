@@ -4,6 +4,8 @@
 
 **One sentence:** before your AI agent runs a sensitive tool, it asks ACP whether the call is allowed. ACP says yes, no, or asks for confirmation, and writes an audit row attributable to the human behind the agent.
 
+> **Advisory, not enforced.** An MCP check only runs when the agent chooses to call it, so an agent can skip it. To have every tool call checked whether the agent cooperates or not, install the hooks for your coding agent (Claude Code, Codex, Cursor and others): `curl -sf https://agenticcontrolplane.com/install.sh | bash`. Use this server for clients that have no hooks, or for "would this be allowed?" questions.
+
 ## What it exposes
 
 Two tools, callable via MCP:
