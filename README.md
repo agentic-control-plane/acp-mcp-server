@@ -4,7 +4,7 @@ An MCP server that lets Claude, ChatGPT, Cursor and other MCP clients ask [Agent
 
 If you use a coding agent with the ACP hook installed ([acp-install](https://github.com/agentic-control-plane/acp-install)), tool calls are already checked automatically. You need this server for MCP clients that have no hook, such as Claude.ai and ChatGPT.
 
-**Limit:** `acp_check` is advisory. The client has to call it, and nothing stops a client that doesn't. It returns `allow`, `deny` or `cant_predict`, and a call that needs a person's approval comes back as `deny` with "requires human approval" in the reason. If the gateway can't read your policy or the network fails, it answers `allow` and marks the result `governed: false`, so it fails open. For enforcement you need the hook.
+**Limit:** `acp_check` is advisory. The client has to call it, and nothing stops a client that doesn't. It returns `allow`, `deny` or `cant_predict`, and a call that needs a person's approval comes back as `deny` with "requires human approval" in the reason. If the gateway can't read your policy it answers `allow` with `governed: false`. The self-hosted bridge also answers `allow` (reason `acp-network-error` or `acp-http-error`) when it can't reach the gateway. Either way it fails open. For enforcement you need the hook.
 
 ## Connect
 
@@ -29,7 +29,7 @@ You need an ACP workspace. Free up to 5 initiating agents, with unlimited calls.
 
 ## Tools
 
-The hosted endpoint serves eleven tools. None of them can approve a held call or apply a policy.
+The hosted endpoint serves these eleven tools by default; a workspace with a customised tool allowlist may show fewer. None of them can approve a held call or apply a policy.
 
 | Tool | What it does |
 |---|---|
@@ -79,7 +79,7 @@ Cursor / Cline        POST /mcp (acp_check)         policy + audit + identity
                                                     -> allow / deny / ask
 ```
 
-Each call writes an audit row attributed to the human behind the OAuth session. One workspace shows every governed call from every MCP client your team uses.
+Each call writes an audit row. On the hosted endpoint it's attributed to the signed-in person; a self-hosted bridge using `ACP_SERVICE_KEY` attributes calls to that key. One workspace shows every governed call from every MCP client your team uses.
 
 ## Auth
 
